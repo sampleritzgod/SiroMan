@@ -5,6 +5,7 @@ import { useAppShell } from "@/components/app-shell-context";
 import { useInbox } from "@/hooks/use-reminders";
 import { useMe } from "@/hooks/use-me";
 import {
+  ensureNotificationServiceWorker,
   formatNotificationDueBody,
   getNotificationPermission,
   showBrowserNotification,
@@ -23,6 +24,10 @@ export function BrowserNotificationListener() {
   openRef.current = requestOpenSticky;
 
   useEffect(() => {
+    void ensureNotificationServiceWorker();
+  }, []);
+
+  useEffect(() => {
     if (!me?.remindersEnabled || !me.browserNotificationsEnabled) return;
     if (getNotificationPermission() !== "granted") return;
 
@@ -36,7 +41,11 @@ export function BrowserNotificationListener() {
       if (!item || item.completedAt || item.archived) continue;
 
       const title = (item.title?.trim() || entry.title || "Untitled sticky").trim();
-      const body = formatNotificationDueBody(item.dueDate, item.dueTime);
+      const body = formatNotificationDueBody(
+        item.dueDate,
+        item.dueTime,
+        entry.body,
+      );
 
       showBrowserNotification({
         reminderId: entry.id,

@@ -1,6 +1,9 @@
 "use client";
 
-import { maybePromptOnFirstReminder } from "@/lib/browser-notifications";
+import {
+  ensureNotificationServiceWorker,
+  maybePromptOnFirstReminder,
+} from "@/lib/browser-notifications";
 import type { Me } from "@/lib/types";
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -23,6 +26,8 @@ export async function maybeEnableNotificationsForFirstReminder(opts: {
   });
 
   if (result !== "granted") return;
+
+  void ensureNotificationServiceWorker();
 
   try {
     const updated = await opts.patchMe({ browserNotificationsEnabled: true });

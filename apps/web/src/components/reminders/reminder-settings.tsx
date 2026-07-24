@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useUpdateMe } from "@/hooks/use-reminders";
 import {
+  ensureNotificationServiceWorker,
   formatLastNotificationLabel,
   getLastNotificationAt,
   getNotificationPermission,
@@ -87,6 +88,7 @@ export function ReminderSettingsPanel({ me }: ReminderSettingsPanelProps) {
     const next = await requestBrowserNotificationPermission();
     setPermission(next);
     if (next === "granted") {
+      void ensureNotificationServiceWorker();
       await patch({ browserNotificationsEnabled: true });
       const result = showTestBrowserNotification();
       setLastAt(getLastNotificationAt());
@@ -227,7 +229,7 @@ export function ReminderSettingsPanel({ me }: ReminderSettingsPanelProps) {
               Browser Notifications
             </p>
             <p className="mt-1 text-xs text-ink-muted">
-              Deliver due reminders while this app tab is open.
+              Deliver Reminder Engine alerts in the browser. Click opens the sticky.
             </p>
           </div>
           <label className="inline-flex items-center gap-2 text-sm text-ink">

@@ -1,12 +1,20 @@
 "use client";
 
+export {
+  formatNotificationDueBody,
+  formatDueTimeLabel,
+} from "@/lib/browser-notification-copy";
+
 const SEEN_KEY = "siroman.reminder.seen";
 const LAST_KEY = "siroman.reminder.lastNotificationAt";
 const PROMPTED_KEY = "siroman.notif.firstReminderPrompted";
 const ICON_PATH = "/icon-192.png";
+const SW_PATH = "/sw-notifications.js";
 
-/** Live Notification instances keyed by sticky id (tag). */
+/** Live page-level Notification instances keyed by sticky id (tag). */
 const liveByStickyId = new Map<string, Notification>();
+
+let swRegisterPromise: Promise<ServiceWorkerRegistration | null> | null = null;
 
 function readSeen(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -101,39 +109,23 @@ export function markFirstReminderPrompted() {
   }
 }
 
-/** Format due date (+ optional time) for notification body. */
-export function formatNotificationDueBody(
-  dueDate: string | null | undefined,
-  dueTime?: string | null,
-): string {
-  if (!dueDate) return "Reminder for your sticky note.";
+function iconHref(): string {
+  return typeof window !== "undefined"
+    ? new URL(ICON_PATH, window.location.origin).href
+    : ICON_PATH;
+}
 
-  let dateLabel = dueDate;
-  try {
-    const [y, m, d] = dueDate.split("-").map(Number);
-    if (y && m && d) {
-      dateLabel = new Date(y, m - 1, d).toLocaleDateString(undefined, {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-  } catch {
-    // keep raw civil date
+/** Register the click-handling SW once (no scheduling inside the worker). */
+export function ensureNotificationServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    return Promise.resolve(null);
   }
-
-  if (dueTime) {
-    const [hh, mm] = dueTime.split(":").map(Number);
-    if (Number.isFinite(hh) && Number.isFinite(mm)) {
-      const period = hh >= 12 ? "PM" : "AM";
-      const hour12 = hh % 12 === 0 ? 12 : hh % 12;
-      const timeLabel = `${hour12}:${String(mm).padStart(2, "0")} ${period}`;
-      return `${dateLabel} · ${timeLabel}`;
-    }
+  if (!swRegisterPromise) {
+    swRegisterPromise = navigator.serviceWorker
+      .register(SW_PATH)
+      .catch(() => null);
   }
-
-  return dateLabel;
+  return swRegisterPromise;
 }
 
 export type ShowBrowserNotificationInput = {
@@ -146,36 +138,30 @@ export type ShowBrowserNotificationInput = {
   onClick?: () => void;
 };
 
-/**
- * Show a browser notification for a due reminder.
- * Returns true if a new notification was displayed.
- */
-export function showBrowserNotification(
+function notificationOptions(
+  input: ShowBrowserNotificationInput,
+): NotificationOptions {
+  return {
+    body: input.body,
+    icon: iconHref(),
+    tag: input.stickyId,
+    data: { stickyId: input.stickyId, reminderId: input.reminderId },
+  };
+}
+
+function tryShowPageNotification(
   input: ShowBrowserNotificationInput,
 ): boolean {
-  if (!isBrowserNotificationSupported()) return false;
-  if (Notification.permission !== "granted") return false;
-  if (hasSeen(input.reminderId)) return false;
-
-  // Reserve seen slot before constructing — prevents duplicate storms on rapid polls.
-  markSeen(input.reminderId);
-
   try {
-    const icon =
-      typeof window !== "undefined"
-        ? new URL(ICON_PATH, window.location.origin).href
-        : ICON_PATH;
-
     const previous = liveByStickyId.get(input.stickyId);
     previous?.close();
 
-    const notification = new Notification(input.title, {
-      body: input.body,
-      icon,
-      tag: input.stickyId,
-    });
-
+    const notification = new Notification(
+      input.title,
+      notificationOptions(input),
+    );
     liveByStickyId.set(input.stickyId, notification);
+    markSeen(input.reminderId);
     setLastNotificationAt(new Date().toISOString());
 
     notification.onclick = () => {
@@ -201,21 +187,74 @@ export function showBrowserNotification(
 
     return true;
   } catch {
-    // Construction can throw in restricted contexts — fail soft.
     return false;
   }
+}
+
+/**
+ * Show a browser notification for a due reminder.
+ * Prefers Service Worker so click can reopen the app if the tab was closed.
+ * Returns true if a new notification was displayed (or queued via SW).
+ */
+export function showBrowserNotification(
+  input: ShowBrowserNotificationInput,
+): boolean {
+  if (!isBrowserNotificationSupported()) return false;
+  if (Notification.permission !== "granted") return false;
+  if (hasSeen(input.reminderId)) return false;
+
+  // Prefer SW when it already controls the page (reliable click → open).
+  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+    // Reserve seen before async show — prevents duplicate storms on rapid polls.
+    markSeen(input.reminderId);
+    void ensureNotificationServiceWorker()
+      .then(async (reg) => {
+        const registration = reg ?? (await navigator.serviceWorker.ready);
+        await registration.showNotification(
+          input.title,
+          notificationOptions(input),
+        );
+        setLastNotificationAt(new Date().toISOString());
+      })
+      .catch(() => {
+        // SW show failed — attempt page Notification (seen already reserved).
+        tryShowPageNotification(input);
+      });
+    return true;
+  }
+
+  // First visit / no controller yet: page Notification + register SW for later.
+  void ensureNotificationServiceWorker();
+  return tryShowPageNotification(input);
 }
 
 /** Close any live OS notification for a sticky (complete / archive / delete). */
 export function cancelBrowserNotificationForSticky(stickyId: string) {
   const live = liveByStickyId.get(stickyId);
-  if (!live) return;
-  try {
-    live.close();
-  } catch {
-    // ignore
+  if (live) {
+    try {
+      live.close();
+    } catch {
+      // ignore
+    }
+    liveByStickyId.delete(stickyId);
   }
-  liveByStickyId.delete(stickyId);
+
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+  void navigator.serviceWorker.ready
+    .then(async (reg) => {
+      const notes = await reg.getNotifications({ tag: stickyId });
+      for (const note of notes) {
+        try {
+          note.close();
+        } catch {
+          // ignore
+        }
+      }
+    })
+    .catch(() => {
+      // ignore
+    });
 }
 
 export function showTestBrowserNotification(): {
@@ -242,17 +281,36 @@ export function showTestBrowserNotification(): {
     };
   }
 
+  const title = "SiroMan";
+  const options: NotificationOptions = {
+    body: "Test notification — you’re all set.",
+    icon: iconHref(),
+    tag: "siroman-test",
+    data: { stickyId: null, reminderId: "test" },
+  };
+
   try {
-    const icon = new URL(ICON_PATH, window.location.origin).href;
-    const notification = new Notification("SiroMan", {
-      body: "Test notification — you’re all set.",
-      icon,
-      tag: "siroman-test",
-    });
-    notification.onclick = () => {
-      window.focus();
-      notification.close();
-    };
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      void ensureNotificationServiceWorker()
+        .then(async (reg) => {
+          const registration = reg ?? (await navigator.serviceWorker.ready);
+          await registration.showNotification(title, options);
+        })
+        .catch(() => {
+          const notification = new Notification(title, options);
+          notification.onclick = () => {
+            window.focus();
+            notification.close();
+          };
+        });
+    } else {
+      void ensureNotificationServiceWorker();
+      const notification = new Notification(title, options);
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
     setLastNotificationAt(new Date().toISOString());
     return { ok: true, message: "Test notification sent." };
   } catch {
