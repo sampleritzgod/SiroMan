@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Priority {
+  none
+  low
+  medium
+  high
+}
+
+enum StickyColor {
+  butter
+  mist
+  sage
+  blush
+  slate
+  lavender
+  peach
+  ink
+}
+
+enum ReminderStatus {
+  scheduled
+  claimed
+  sent
+  snoozed
+  cancelled
+  failed
+}
+
+enum ReminderChannel {
+  inbox
+  webpush
+}
+
+enum WeekStart {
+  sunday
+  monday
+}
+
+enum ReminderFrequency {
+  gentle
+  standard
+  intensive
+}
+
+model User {
+  id                          String            @id @default(cuid())
+  clerkId                     String            @unique
+  email                       String?
+  displayName                 String?
+  timezone                    String            @default("UTC")
+  weekStartsOn                WeekStart         @default(monday)
+  autoArchiveOnComplete       Boolean           @default(false)
+  onboardingCompleted         Boolean           @default(false)
+  quietHoursStartMinute       Int               @default(1320)
+  quietHoursEndMinute         Int               @default(480)
+  remindersEnabled            Boolean           @default(true)
+  reminderFrequency           ReminderFrequency @default(standard)
+  reminderMorningMinute       Int               @default(540)
+  reminderEveningMinute       Int               @default(1080)
+  browserNotificationsEnabled Boolean           @default(false)
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+
+  items               Item[]
+  tags                Tag[]
+  pushSubscriptions   PushSubscription[]
+  reminderOccurrences ReminderOccurrence[]
+  inboxEntries        ReminderInboxEntry[]
+  calendarConnections CalendarConnection[]
+}
+
+model Item {
+  id                String      @id @default(cuid())
+  userId            String
+  title             String?     @db.VarChar(120)
+  description       String      @db.Text
+  color             StickyColor @default(butter)
+  priority          Priority    @default(none)
+  dueDate           DateTime?   @db.Date
+  /// Optional local time HH:mm in the user's IANA timezone. Null = all-day.
+  dueTime           String?     @db.VarChar(5)
+  pinned            Boolean     @default(false)
+  archived          Boolean     @default(false)
+  completedAt       DateTime?
+  positionX         Float?      @default(0)
+  positionY         Float?      @default(0)
+  rank              Int         @default(0)
+  trackAsCommitment Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags      ItemTag[]
+  reminders ReminderOccurrence[]
+  inbox     ReminderInboxEntry[]
+  calendarEvents CalendarEventMap[]
+
+  @@index([userId, archived, pinned])
+  @@index([userId, dueDate])
+  @@index([userId, completedAt])
+  @@index([userId, updatedAt])
+}
+
+model Tag {
+  id     String @id @default(cuid())
+  userId String
+  name   String @db.VarChar(40)
+
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items ItemTag[]
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model ItemTag {
+  itemId String
+  tagId  String
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, tagId])
+}
+
+model ReminderOccurrence {
+  id         String          @id @default(cuid())
+  itemId     String
+  userId     String
+  policyKey  String          @db.VarChar(64)
+  fireAt     DateTime
+  status     ReminderStatus  @default(scheduled)
+  channel    ReminderChannel @default(inbox)
+  claimedAt  DateTime?
+  sentAt     DateTime?
+  lastError  String?
+  retryCount Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  item  Item                @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inbox ReminderInboxEntry?
+
+  @@unique([itemId, policyKey, fireAt])
+  @@index([status, fireAt])
+  @@index([userId, fireAt])
+  @@index([itemId, status])
+}
+
+model ReminderInboxEntry {
+  id           String    @id @default(cuid())
+  userId       String
+  itemId       String
+  occurrenceId String    @unique
+  title        String
+  body         String?
+  readAt       DateTime?
+  dismissedAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item       Item               @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  occurrence ReminderOccurrence @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum CalendarProviderId {
+  google
+}
+
+enum CalendarConnectionStatus {
+  connected
+  syncing
+  error
+  paused
+  disconnected
+}
+
+enum CalendarEventSyncStatus {
+  pending
+  synced
+  error
+  removed
+}
+
+/// OAuth connection to an external calendar provider (one per user+provider).
+model CalendarConnection {
+  id               String                   @id @default(cuid())
+  userId           String
+  provider         CalendarProviderId
+  /// AES-GCM ciphertext (base64) of refresh token
+  refreshTokenEnc  String
+  accessTokenEnc   String?
+  expiresAt        DateTime?
+  /// Provider calendar id (Google: "primary" or calendar list id)
+  calendarId       String                   @default("primary")
+  syncEnabled      Boolean                  @default(true)
+  status           CalendarConnectionStatus @default(connected)
+  lastSyncAt       DateTime?
+  lastError        String?
+  /// When sticky removed/archived: cancel (default) or delete external event
+  onRemovePolicy   String                   @default("cancel")
+  accountEmail     String?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  user   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events CalendarEventMap[]
+
+  @@unique([userId, provider])
+  @@index([userId, status])
+}
+
+/// Maps a StickyFlow Item to exactly one external event per provider (no duplicates).
+model CalendarEventMap {
+  id              String                 @id @default(cuid())
+  itemId          String
+  connectionId    String
+  provider        CalendarProviderId
+  externalEventId String
+  calendarId      String
+  /// Google Calendar htmlLink (or provider equivalent) for “Open in calendar”
+  externalHtmlLink String?
+  syncStatus      CalendarEventSyncStatus @default(pending)
+  lastSyncedAt    DateTime?
+  lastError       String?
+  etag            String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  item       Item               @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  connection CalendarConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, provider])
+  @@unique([connectionId, externalEventId])
+  @@index([connectionId, syncStatus])
+  @@index([itemId])
+}
