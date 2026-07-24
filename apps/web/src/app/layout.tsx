@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Caveat, Fraunces, Inter, Patrick_Hand } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -40,7 +41,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${fraunces.variable} ${caveat.variable} ${patrickHand.variable} min-h-screen bg-canvas font-sans text-ink antialiased`}
       >

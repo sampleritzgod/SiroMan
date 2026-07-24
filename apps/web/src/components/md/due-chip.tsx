@@ -49,8 +49,8 @@ export function DueChip({
       className={cn(
         "inline-flex items-center px-2.5 py-1 text-[13px] leading-[18px]",
         "rounded-[9px_12px_10px_11px]",
-        "border-[1.5px] border-stroke-doodle/25",
-        "shadow-[0.5px_1px_0_rgba(42,38,34,0.06)]",
+        "border border-stroke-doodle/20",
+        "shadow-[0_1px_0_var(--doodle-shadow-lift)]",
         tones[status],
         className,
       )}

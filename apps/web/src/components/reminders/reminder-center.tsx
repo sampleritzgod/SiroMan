@@ -130,7 +130,7 @@ export function ReminderCenter({ me }: ReminderCenterProps) {
           className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full opacity-50"
           style={{
             background:
-              "radial-gradient(circle, rgba(255,217,222,0.7), transparent 70%)",
+              "radial-gradient(circle, var(--glow-blush), transparent 70%)",
           }}
         />
         <div className="relative flex flex-wrap items-start justify-between gap-4">

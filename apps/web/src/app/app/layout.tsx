@@ -18,12 +18,27 @@ import {
 import { ReminderBadgeButton } from "@/components/reminders/reminder-badge";
 import { BrowserNotificationListener } from "@/components/reminders/browser-notification-listener";
 import { StickyDeepLinkHost } from "@/components/reminders/sticky-deep-link-host";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Navbar } from "@/components/ui/navbar";
 import { Sidebar } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
+import { useMe } from "@/hooks/use-me";
+
+function workspaceLabel(me: {
+  displayName: string | null;
+  email: string | null;
+} | undefined): string | undefined {
+  if (!me) return undefined;
+  const name = me.displayName?.trim();
+  if (name) return name;
+  const email = me.email?.trim();
+  if (email) return email;
+  return undefined;
+}
 
 function AppChrome({ children }: { children: ReactNode }) {
   const { view, setView } = useAppShell();
+  const { data: me } = useMe();
+  const title = workspaceLabel(me);
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
@@ -39,16 +54,14 @@ function AppChrome({ children }: { children: ReactNode }) {
             SiroMan
           </Link>
         }
-        title="Workspace"
+        title={title}
         actions={
           <>
+            <ThemeToggle compact />
             <ReminderBadgeButton
               active={view === "reminders"}
               onClick={() => setView("reminders")}
             />
-            <Badge variant="outline" className="hidden sm:inline-flex">
-              Notebook
-            </Badge>
             <UserButton
               appearance={{
                 elements: {

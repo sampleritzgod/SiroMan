@@ -25,7 +25,7 @@ const fills: Record<string, string> = {
   slate: "var(--sticky-slate)",
   lavender: "var(--sticky-lavender)",
   peach: "var(--sticky-peach)",
-  ink: "var(--sticky-ink)",
+  ink: "var(--sticky-note-ink)",
 };
 
 type DoodleFrameProps = {
@@ -98,10 +98,13 @@ export function DoodleFrame({
         </svg>
 
         <div
-          className="relative m-[4.5%] overflow-hidden rounded-[calc(var(--radius-md)-2px)] p-4"
+          className={cn(
+            "relative m-[4.5%] overflow-hidden rounded-[calc(var(--radius-md)-2px)] p-4",
+            color === "surface" ? "text-ink" : "on-sticky",
+          )}
           style={{
             backgroundColor: fill,
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
+            boxShadow: "inset 0 1px 0 var(--paper-highlight)",
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
             backgroundBlendMode: "multiply",
@@ -109,12 +112,7 @@ export function DoodleFrame({
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -top-1 left-1/2 h-3 w-11 -translate-x-1/2 rotate-[-2deg] rounded-[2px]"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,252,247,0.35))",
-              boxShadow: "0 0 0 1px rgba(42,38,34,0.08)",
-            }}
+            className="sticky-tape pointer-events-none absolute -top-1 left-1/2 h-3 w-11 -translate-x-1/2 rotate-[-2deg] rounded-[2px]"
           />
           {children}
         </div>

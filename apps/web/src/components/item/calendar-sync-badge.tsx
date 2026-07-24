@@ -30,20 +30,24 @@ export function CalendarSyncBadge({ sync, className }: CalendarSyncBadgeProps) {
     <span
       title={sync.lastError ?? LABELS[sync.status]}
       className={cn(
-        "inline-flex items-center gap-1 rounded-[8px_10px_9px_11px] border-[1.5px] px-2 py-0.5 text-[11px] font-medium",
+        // Sync stays quiet — metadata-level emphasis, not a second accent.
+        "inline-flex items-center gap-1 rounded-[8px_10px_9px_11px] border px-2 py-0.5 text-[11px] font-medium",
         sync.status === "synced" &&
-          "border-accent/30 bg-accent-soft/70 text-accent",
+          "border-stroke-doodle/20 bg-sticky-ink/60 text-ink-faint",
         sync.status === "syncing" &&
-          "border-stroke-doodle/25 bg-sticky-mist/70 text-ink-muted",
+          "border-stroke-doodle/20 bg-sticky-ink/50 text-ink-muted",
         sync.status === "failed" &&
-          "border-danger/30 bg-sticky-blush/70 text-danger",
+          "border-danger/25 bg-sticky-blush/40 text-danger",
         sync.status === "local_only" &&
-          "border-stroke-doodle/20 bg-sticky-ink/80 text-ink-faint",
+          "border-stroke-doodle/15 bg-transparent text-ink-faint",
         className,
       )}
     >
       <Icon
-        className={cn("h-3 w-3", sync.status === "syncing" && "animate-spin")}
+        className={cn(
+          "h-3 w-3 opacity-80",
+          sync.status === "syncing" && "animate-spin",
+        )}
         strokeWidth={1.75}
       />
       {LABELS[sync.status]}

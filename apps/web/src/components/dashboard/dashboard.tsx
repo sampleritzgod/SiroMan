@@ -151,6 +151,13 @@ export function Dashboard({ me }: DashboardProps) {
         onTogglePin={stickies.togglePin}
         onToggleArchive={stickies.toggleArchive}
         onToggleComplete={stickies.toggleComplete}
+        isLoading={stickies.isLoading}
+        isError={stickies.isError}
+        errorMessage={formatApiError(
+          stickies.error,
+          "Couldn’t load archived stickies.",
+        )}
+        onRetry={() => stickies.refetch()}
       />
     </div>
   );

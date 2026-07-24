@@ -35,7 +35,7 @@ export function ReminderBadgeButton({
     >
       <Bell className="h-4 w-4" strokeWidth={1.75} />
       {count > 0 ? (
-        <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-white">
+        <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-danger-foreground">
           {count > 9 ? "9+" : count}
         </span>
       ) : null}

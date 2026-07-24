@@ -1146,14 +1146,14 @@ export async function syncItemRemovalBeforeDelete(
   const item = await prisma.item.findFirst({ where: { id: itemId, userId } });
   if (!item) return;
 
-  const fake: Item = { ...item, archived: true, dueDate: null };
+  const removalSticky: Item = { ...item, archived: true, dueDate: null };
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return;
 
   const connections = await prisma.calendarConnection.findMany({
     where: { userId, syncEnabled: true },
   });
-  const sticky = toSyncable(fake, user.timezone);
+  const sticky = toSyncable(removalSticky, user.timezone);
   await Promise.all(
     connections.map((connection) =>
       syncItemWithConnection(sticky, connection, env),

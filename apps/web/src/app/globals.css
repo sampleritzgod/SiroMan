@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
+/* Class-based dark mode (set on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
+
+  /* Notebook surfaces */
   --canvas: #f6f3ec;
   --surface: #fffcf7;
   --ink: #1c1917;
@@ -12,8 +18,11 @@
   --accent-soft: #ccfbf1;
   --accent-foreground: #f0fdfa;
   --danger: #b91c1c;
+  --danger-foreground: #ffffff;
   --success: #15803d;
   --warning: #c2410c;
+
+  /* Sticky pastels — handwriting stays dark via --on-sticky */
   --sticky-butter: #fff1a8;
   --sticky-mist: #d8eefc;
   --sticky-sage: #d4f5df;
@@ -22,6 +31,10 @@
   --sticky-lavender: #e8e2fc;
   --sticky-peach: #ffe0c2;
   --sticky-ink: #f3f1ec;
+  --sticky-note-ink: #f3f1ec;
+  --on-sticky: #1c1917;
+  --sticky-overlay: rgba(255, 255, 255, 0.42);
+
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
@@ -29,6 +42,87 @@
   --sketch-wiggle: 0.4deg;
   --dot-grid: rgba(42, 38, 34, 0.055);
   --sidebar-width: 232px;
+
+  /* Theme-aware decorative tokens */
+  --paper-wash: rgba(255, 255, 255, 0.75);
+  --paper-highlight: rgba(255, 255, 255, 0.55);
+  --tape-from: rgba(255, 255, 255, 0.78);
+  --tape-to: rgba(255, 252, 247, 0.42);
+  --doodle-shadow: rgba(42, 38, 34, 0.12);
+  --doodle-shadow-soft: rgba(42, 38, 34, 0.08);
+  --doodle-shadow-lift: rgba(42, 38, 34, 0.06);
+  --sketch-edge: rgba(42, 38, 34, 0.08);
+  --dot-surface-dot: rgba(42, 38, 34, 0.07);
+  --notebook-line: rgba(15, 118, 110, 0.055);
+  --glow-butter: rgba(255, 241, 168, 0.7);
+  --glow-blush: rgba(255, 217, 222, 0.7);
+  --glow-sage: rgba(212, 245, 223, 0.85);
+  --glow-mist: rgba(216, 238, 252, 0.7);
+  --dialog-shadow: 2px 3px 0 rgba(42, 38, 34, 0.08), 0 16px 40px rgba(28, 25, 23, 0.08);
+}
+
+/*
+ * Dark notebook — warm paper journal at night.
+ * Soft hierarchy, muted stickies, calm accents. Not flat black.
+ */
+.dark {
+  color-scheme: dark;
+
+  /* Warm dark paper (avoid pure black) */
+  --canvas: #1c1915;
+  --surface: #26221c;
+  --ink: #f3eee6;
+  --ink-muted: #9a9186;
+  --ink-faint: #6e675e;
+  --stroke: #3d3830;
+  --stroke-doodle: #6f675c;
+
+  /* Accents desaturated ~35% vs bright dark-mode defaults */
+  --accent: #6a9e94;
+  --accent-soft: #2a3d38;
+  --accent-foreground: #e8f2ef;
+  --danger: #c47a7a;
+  --danger-foreground: #f8ecec;
+  --success: #6a9e78;
+  --warning: #c4926a;
+
+  /*
+   * Dedicated dark sticky faces — muted tinted papers, not light pastels.
+   * Handwriting uses warm cream (--on-sticky).
+   */
+  --sticky-butter: #4a4330;
+  --sticky-mist: #343f48;
+  --sticky-sage: #35463c;
+  --sticky-blush: #4a383a;
+  --sticky-slate: #383d44;
+  --sticky-lavender: #3c3848;
+  --sticky-peach: #4a3e34;
+  /* Chrome fill (hover/selected) — slightly raised paper */
+  --sticky-ink: #2e2923;
+  /* “Ink” sticky note face */
+  --sticky-note-ink: #35312b;
+  --on-sticky: #f0e9df;
+  --sticky-overlay: rgba(243, 238, 230, 0.08);
+
+  /* Soft depth — no heavy black slabs */
+  --paper-shadow: 0 1px 0 rgba(255, 248, 235, 0.03), 0 8px 24px rgba(12, 10, 8, 0.28);
+  --dot-grid: rgba(232, 220, 200, 0.04);
+
+  --paper-wash: rgba(232, 220, 200, 0.045);
+  --paper-highlight: rgba(255, 248, 235, 0.06);
+  --tape-from: rgba(255, 248, 235, 0.14);
+  --tape-to: rgba(255, 248, 235, 0.05);
+  --doodle-shadow: rgba(12, 10, 8, 0.22);
+  --doodle-shadow-soft: rgba(12, 10, 8, 0.16);
+  --doodle-shadow-lift: rgba(12, 10, 8, 0.12);
+  --sketch-edge: rgba(232, 220, 200, 0.08);
+  --dot-surface-dot: rgba(232, 220, 200, 0.05);
+  --notebook-line: rgba(106, 158, 148, 0.07);
+  --glow-butter: rgba(180, 160, 90, 0.1);
+  --glow-blush: rgba(180, 120, 130, 0.09);
+  --glow-sage: rgba(110, 150, 120, 0.09);
+  --glow-mist: rgba(110, 140, 160, 0.09);
+  --dialog-shadow: 0 1px 0 rgba(255, 248, 235, 0.04), 0 18px 40px rgba(12, 10, 8, 0.4);
 }
 
 @theme inline {
@@ -43,6 +137,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-sticky-butter: var(--sticky-butter);
@@ -53,6 +148,7 @@
   --color-sticky-lavender: var(--sticky-lavender);
   --color-sticky-peach: var(--sticky-peach);
   --color-sticky-ink: var(--sticky-ink);
+  --color-on-sticky: var(--on-sticky);
   --font-sans: var(--font-geist);
   --font-display: var(--font-hand);
   --radius-sm: var(--radius-sm);
@@ -64,7 +160,7 @@
 body {
   background-color: var(--canvas);
   background-image:
-    radial-gradient(ellipse 110% 70% at 50% -15%, rgba(255, 255, 255, 0.75), transparent 58%),
+    radial-gradient(ellipse 110% 70% at 50% -15%, var(--paper-wash), transparent 58%),
     radial-gradient(circle, var(--dot-grid) 1px, transparent 1.2px),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:
@@ -74,6 +170,21 @@ body {
   background-blend-mode: normal, normal, multiply;
   color: var(--ink);
   font-family: var(--font-geist), system-ui, sans-serif;
+}
+
+.dark body {
+  background-blend-mode: normal, normal, soft-light;
+}
+
+.dark .dot-surface {
+  background-blend-mode: normal, soft-light;
+}
+
+.dark .sketch-border {
+  border-color: color-mix(in srgb, var(--stroke-doodle) 55%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent),
+    var(--paper-shadow);
 }
 
 .font-hand {
@@ -93,7 +204,7 @@ body {
 /* Lined notebook panel */
 .notebook-surface {
   background-image:
-    linear-gradient(transparent 27px, rgba(15, 118, 110, 0.055) 28px),
+    linear-gradient(transparent 27px, var(--notebook-line) 28px),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 100% 28px, auto;
   background-color: var(--surface);
@@ -102,10 +213,14 @@ body {
 .dot-surface {
   background-color: var(--surface);
   background-image:
-    radial-gradient(circle, rgba(42, 38, 34, 0.07) 1px, transparent 1.2px),
+    radial-gradient(circle, var(--dot-surface-dot) 1px, transparent 1.2px),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 18px 18px, auto;
   background-blend-mode: normal, multiply;
+}
+
+.dark .dot-surface {
+  background-blend-mode: normal, soft-light;
 }
 
 .sketch-border {
@@ -117,20 +232,24 @@ body {
 }
 
 .sketch-underline {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='6' viewBox='0 0 120 6' fill='none'%3E%3Cpath d='M1 3.5C18 1.5 36 5 54 3.2C72 1.4 90 5.2 119 2.8' stroke='%232A2622' stroke-width='1.5' stroke-linecap='round' opacity='0.45'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
+  background-image: linear-gradient(
+    transparent calc(100% - 3px),
+    color-mix(in srgb, var(--stroke-doodle) 45%, transparent) calc(100% - 2px),
+    transparent 100%
+  );
+  background-repeat: no-repeat;
   background-position: left bottom;
-  background-size: 120px 6px;
+  background-size: 100% 100%;
   padding-bottom: 6px;
 }
 
 .sticky-tape {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.78),
-    rgba(255, 252, 247, 0.42)
-  );
-  box-shadow: 0 0 0 1px rgba(42, 38, 34, 0.08);
+  background: linear-gradient(180deg, var(--tape-from), var(--tape-to));
+  box-shadow: 0 0 0 1px var(--sketch-edge);
+}
+
+.on-sticky {
+  color: var(--on-sticky);
 }
 
 *:focus-visible {
@@ -221,5 +340,5 @@ body {
   background-color: var(--sticky-peach);
 }
 .bg-sticky-fill-ink {
-  background-color: var(--sticky-ink);
+  background-color: var(--sticky-note-ink);
 }

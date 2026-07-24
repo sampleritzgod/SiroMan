@@ -75,7 +75,10 @@ export function ExecutionDashboard({ me, stickies }: ExecutionDashboardProps) {
 
   const hour = new Date().getHours();
   const greeting = greetingForHour(hour);
-  const firstName = me.displayName?.split(" ")[0] ?? "there";
+  const firstName =
+    me.displayName?.trim().split(/\s+/)[0] ||
+    me.email?.split("@")[0] ||
+    "you";
   const activeNotes = useMemo(
     () => stickies.active.map((n) => enrichSticky(n)),
     [stickies.active],
@@ -211,7 +214,7 @@ export function ExecutionDashboard({ me, stickies }: ExecutionDashboardProps) {
           className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full opacity-50"
           style={{
             background:
-              "radial-gradient(circle, rgba(255,241,168,0.7), transparent 70%)",
+              "radial-gradient(circle, var(--glow-butter), transparent 70%)",
           }}
         />
         <p className="text-sm font-medium uppercase tracking-[0.08em] text-ink-muted">

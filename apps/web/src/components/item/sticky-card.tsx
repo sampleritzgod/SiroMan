@@ -138,10 +138,10 @@ export function StickyCard({
         </svg>
 
         <div
-          className="relative m-[4.5%] flex h-[calc(100%-9%)] flex-col overflow-hidden rounded-[calc(var(--radius-md)-2px)] p-4"
+          className="relative m-[4.5%] flex h-[calc(100%-9%)] flex-col overflow-hidden rounded-[calc(var(--radius-md)-2px)] p-4 on-sticky"
           style={{
             backgroundColor: fill,
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
+            boxShadow: "inset 0 1px 0 var(--paper-highlight)",
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
             backgroundBlendMode: "multiply",
@@ -155,7 +155,7 @@ export function StickyCard({
           <div className="mb-2 flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-wrap items-center gap-1.5">
               {note.pinned ? (
-                <Badge variant="outline" className="bg-white/40">
+                <Badge variant="muted" className="bg-[color:var(--sticky-overlay)] text-[color:var(--on-sticky)]/70">
                   <Pin className="h-3 w-3" strokeWidth={1.75} />
                   Pinned
                 </Badge>
@@ -180,7 +180,7 @@ export function StickyCard({
                 <button
                   type="button"
                   aria-label="Sticky actions"
-                  className="rounded-[8px_10px_9px_11px] border border-transparent p-1 text-ink-muted opacity-70 transition-colors hover:border-stroke-doodle/25 hover:bg-white/40 hover:text-ink group-hover:opacity-100"
+                  className="rounded-[8px_10px_9px_11px] border border-transparent p-1 text-[color:var(--on-sticky)]/55 opacity-70 transition-colors hover:border-[color:var(--on-sticky)]/20 hover:bg-[color:var(--sticky-overlay)] hover:text-[color:var(--on-sticky)] group-hover:opacity-100"
                 >
                   <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
                 </button>
@@ -254,8 +254,8 @@ export function StickyCard({
           >
             <h3
               className={cn(
-                "font-hand text-[1.45rem] leading-tight text-ink",
-                done && "line-through decoration-stroke-doodle/40",
+                "font-hand text-[1.45rem] leading-tight text-[color:var(--on-sticky)]",
+                done && "line-through decoration-[color:var(--on-sticky)]/35",
               )}
             >
               {note.title?.trim() || "Untitled sticky"}
@@ -263,8 +263,8 @@ export function StickyCard({
             {note.description ? (
               <p
                 className={cn(
-                  "mt-2 line-clamp-3 text-sm leading-relaxed text-ink/80",
-                  done && "line-through decoration-stroke-doodle/30",
+                  "mt-2 line-clamp-3 text-sm leading-relaxed text-[color:var(--on-sticky)]/80",
+                  done && "line-through decoration-[color:var(--on-sticky)]/30",
                 )}
               >
                 {note.description}
@@ -275,18 +275,22 @@ export function StickyCard({
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
             <DueChip status={note.status} remainingDays={note.remainingDays} />
             {note.dueTime ? (
-              <Badge variant="outline" className="bg-white/35">
+              <Badge variant="muted" className="bg-[color:var(--sticky-overlay)] text-[color:var(--on-sticky)]/65">
                 {note.dueTime}
               </Badge>
             ) : null}
             <CalendarSyncBadge sync={sync} />
             {note.tags.slice(0, 2).map((tag) => (
-              <Badge key={tag} variant="outline" className="bg-white/35">
+              <Badge
+                key={tag}
+                variant="muted"
+                className="bg-[color:var(--sticky-overlay)] text-[color:var(--on-sticky)]/60"
+              >
                 #{tag}
               </Badge>
             ))}
             {note.tags.length > 2 ? (
-              <Badge variant="default">+{note.tags.length - 2}</Badge>
+              <Badge variant="muted">+{note.tags.length - 2}</Badge>
             ) : null}
           </div>
 

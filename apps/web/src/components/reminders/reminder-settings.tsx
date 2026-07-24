@@ -5,6 +5,7 @@ import type { ReminderFrequency } from "@stickyflow/shared";
 import { BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useUpdateMe } from "@/hooks/use-reminders";
 import {
   formatLastNotificationLabel,
@@ -123,6 +124,8 @@ export function ReminderSettingsPanel({ me }: ReminderSettingsPanelProps) {
         {message ? <Badge variant="outline">{message}</Badge> : null}
       </div>
 
+      <ThemeToggle />
+
       <label className="flex items-center justify-between gap-4 rounded-[12px_14px_11px_13px] border-[1.5px] border-stroke-doodle/30 bg-surface px-3 py-3">
         <span>
           <span className="block text-sm font-medium text-ink">
@@ -157,7 +160,7 @@ export function ReminderSettingsPanel({ me }: ReminderSettingsPanelProps) {
                 className={cn(
                   "rounded-[12px_14px_11px_13px] border-[1.5px] px-3 py-3 text-left transition-colors",
                   selected
-                    ? "border-stroke-doodle bg-sticky-ink shadow-[1px_1px_0_rgba(42,38,34,0.08)]"
+                    ? "border-stroke-doodle bg-sticky-ink shadow-[1px_1px_0_var(--doodle-shadow-soft)]"
                     : "border-stroke-doodle/25 hover:bg-sticky-ink/50",
                 )}
               >

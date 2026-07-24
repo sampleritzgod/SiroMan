@@ -37,7 +37,7 @@ export function NotificationCard({
       }
       className={cn(
         "group relative flex gap-3 rounded-[14px_16px_13px_15px] border-[1.5px] border-stroke-doodle/30 bg-surface/90 p-3.5",
-        "shadow-[0.5px_1px_0_rgba(42,38,34,0.05)]",
+        "shadow-[0.5px_1px_0_var(--doodle-shadow-lift)]",
         "transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5",
         className,
       )}

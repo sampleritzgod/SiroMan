@@ -40,7 +40,7 @@ export function PriorityPicker({
               "inline-flex min-h-9 items-center gap-2 rounded-[10px_12px_11px_13px] border-[1.5px] px-3 text-sm transition-colors",
               option.tone,
               selected
-                ? "border-stroke-doodle text-ink shadow-[1px_1px_0_rgba(42,38,34,0.1)]"
+                ? "border-stroke-doodle text-ink shadow-[1px_1px_0_var(--doodle-shadow-soft)]"
                 : "border-stroke-doodle/20 text-ink-muted hover:border-stroke-doodle/40",
             )}
           >

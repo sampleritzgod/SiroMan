@@ -23,7 +23,7 @@ export function DialogContent({
           "notebook-surface p-6",
           "rounded-[18px_22px_20px_16px]",
           "border-[1.85px] border-stroke-doodle/70",
-          "shadow-[2px_3px_0_rgba(42,38,34,0.08),0_16px_40px_rgba(28,25,23,0.08)]",
+          "shadow-[var(--dialog-shadow)]",
           className,
         )}
         {...props}

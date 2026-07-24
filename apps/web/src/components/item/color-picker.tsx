@@ -30,7 +30,7 @@ export function ColorPicker({ value, onChange, className }: ColorPickerProps) {
             className={cn(
               "h-8 w-8 rounded-[9px_11px_8px_10px] border-[1.75px] transition-transform",
               selected
-                ? "scale-110 border-stroke-doodle shadow-[1px_2px_0_rgba(42,38,34,0.18)]"
+                ? "scale-110 border-stroke-doodle shadow-[1px_2px_0_var(--doodle-shadow)]"
                 : "border-stroke-doodle/30 hover:scale-105",
             )}
             style={{ backgroundColor: STICKY_CSS[color] }}

@@ -39,7 +39,7 @@ export function Sidebar({ items, footer, className }: SidebarProps) {
         className,
       )}
     >
-      <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Workspace">
+      <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Main">
         {items.map((item) => {
           const content = (
             <>
@@ -58,7 +58,7 @@ export function Sidebar({ items, footer, className }: SidebarProps) {
           const classNameItem = cn(
             "flex min-h-10 items-center gap-2.5 rounded-[12px_14px_11px_13px] px-3 text-sm font-medium transition-colors",
             item.active
-              ? "bg-sticky-ink text-ink shadow-[inset_0_0_0_1.5px_rgba(42,38,34,0.12)]"
+              ? "bg-sticky-ink text-ink shadow-[inset_0_0_0_1.5px_var(--doodle-shadow)]"
               : "text-ink-muted hover:bg-sticky-ink/70 hover:text-ink",
             item.disabled && "pointer-events-none opacity-40",
           );

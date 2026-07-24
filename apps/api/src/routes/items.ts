@@ -103,7 +103,7 @@ itemsRouter.get("/", async (req, res, next) => {
       body: {
         count: result.data.length,
         nextCursor: result.nextCursor,
-        sampleIds: result.data.slice(0, 3).map((item) => item.id),
+        previewIds: result.data.slice(0, 3).map((item) => item.id),
       },
     });
 

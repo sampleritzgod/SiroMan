@@ -21,7 +21,7 @@ export function TaskRow({ note, onOpen, subtitle, className }: TaskRowProps) {
       className={cn(
         "flex w-full items-center gap-3 rounded-[14px_16px_13px_15px]",
         "border-[1.5px] border-stroke-doodle/30 bg-surface/90 px-3.5 py-3 text-left",
-        "shadow-[0.5px_1px_0_rgba(42,38,34,0.05)]",
+        "shadow-[0.5px_1px_0_var(--doodle-shadow-lift)]",
         "transition-transform duration-150 hover:-translate-y-0.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
         className,

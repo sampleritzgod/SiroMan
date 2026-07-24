@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { DoodleFrame } from "@/components/md/doodle-frame";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { motionTokens } from "@/lib/motion";
 
 function SketchScribble() {
@@ -30,12 +31,15 @@ export function MarketingHero() {
 
   return (
     <main className="relative mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-10 px-6 py-16">
+      <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+        <ThemeToggle compact />
+      </div>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-16 mx-auto h-48 max-w-lg opacity-40"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(255,241,168,0.55), transparent 70%)",
+            "radial-gradient(ellipse at center, var(--glow-butter), transparent 70%)",
         }}
       />
 
@@ -59,7 +63,7 @@ export function MarketingHero() {
       </motion.div>
 
       <DoodleFrame preset="sketch-a" color="butter" className="max-w-md" delay={0.12}>
-        <p className="text-sm leading-relaxed text-ink">
+        <p className="text-sm leading-relaxed text-[color:var(--on-sticky)]">
           Capture once. Stay reminded until done. Never duplicate work.
         </p>
       </DoodleFrame>

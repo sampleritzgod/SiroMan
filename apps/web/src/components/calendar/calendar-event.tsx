@@ -60,7 +60,7 @@ export function CalendarEvent({
       className={cn(
         "group flex w-full items-start gap-2 text-left",
         "rounded-[10px_12px_11px_13px] border-[1.5px] border-stroke-doodle/30",
-        "shadow-[0.5px_1px_0_rgba(42,38,34,0.06)]",
+        "shadow-[0.5px_1px_0_var(--doodle-shadow-lift)]",
         "transition-[box-shadow,border-color] hover:border-stroke-doodle/55",
         dense ? "px-2 py-1.5" : "px-2.5 py-2",
         overdue && "border-danger/35 bg-sticky-blush/50",
@@ -70,7 +70,7 @@ export function CalendarEvent({
         overdue
           ? undefined
           : {
-              backgroundColor: `color-mix(in srgb, ${fill} 72%, white)`,
+              backgroundColor: `color-mix(in srgb, ${fill} 55%, var(--surface))`,
             }
       }
       aria-label={`Open sticky: ${note.title || "Untitled sticky"}`}

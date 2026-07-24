@@ -229,7 +229,7 @@ export function CalendarSyncSettingsPanel() {
                     className={cn(
                       "rounded-[12px_14px_11px_13px] border-[1.5px] px-3 py-3 text-left transition-colors",
                       selected
-                        ? "border-stroke-doodle bg-sticky-ink shadow-[1px_1px_0_rgba(42,38,34,0.08)]"
+                        ? "border-stroke-doodle bg-sticky-ink shadow-[1px_1px_0_var(--doodle-shadow-soft)]"
                         : "border-stroke-doodle/25 hover:bg-sticky-ink/50",
                     )}
                   >

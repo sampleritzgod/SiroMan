@@ -170,7 +170,7 @@ export function CalendarPage({ me }: CalendarPageProps) {
           className="pointer-events-none absolute -right-6 -top-8 h-36 w-36 rounded-full opacity-45"
           style={{
             background:
-              "radial-gradient(circle, rgba(212,245,223,0.85), transparent 70%)",
+              "radial-gradient(circle, var(--glow-sage), transparent 70%)",
           }}
         />
         <div className="relative flex flex-wrap items-start justify-between gap-4">

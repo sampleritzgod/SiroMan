@@ -116,7 +116,7 @@ export function CalendarToolbar({
                 className={cn(
                   "rounded-[9px_11px_10px_12px] px-3 py-1.5 text-sm font-medium transition-colors",
                   mode === item.value
-                    ? "bg-sticky-ink text-ink shadow-[0.5px_1px_0_rgba(42,38,34,0.08)]"
+                    ? "bg-sticky-ink text-ink shadow-[0.5px_1px_0_var(--doodle-shadow-soft)]"
                     : "text-ink-muted hover:text-ink",
                 )}
               >

@@ -35,9 +35,8 @@ export const STICKY_CSS: Record<StickyColor, string> = {
   slate: "var(--sticky-slate)",
   lavender: "var(--sticky-lavender)",
   peach: "var(--sticky-peach)",
-  ink: "var(--sticky-ink)",
+  ink: "var(--sticky-note-ink)",
 };
-
 export function enrichSticky(note: StickyNote, today = new Date()): StickyNoteView {
   const status =
     note.status ??

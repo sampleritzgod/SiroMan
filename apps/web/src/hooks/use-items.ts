@@ -488,10 +488,10 @@ export function useStickiesWorkspace(opts?: {
   const listed = board.data?.data ?? [];
 
   return {
-    ready: !board.isLoading && !allBoard.isLoading,
-    isLoading: board.isLoading || allBoard.isLoading,
-    isError: board.isError || allBoard.isError,
-    error: board.error ?? allBoard.error,
+    ready: !board.isLoading && !allBoard.isLoading && !archive.isLoading,
+    isLoading: board.isLoading || allBoard.isLoading || archive.isLoading,
+    isError: board.isError || allBoard.isError || archive.isError,
+    error: board.error ?? allBoard.error ?? archive.error,
     refetch: () => {
       void board.refetch();
       void allBoard.refetch();

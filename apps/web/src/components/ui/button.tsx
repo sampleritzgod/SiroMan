@@ -17,21 +17,21 @@ const buttonVariants = cva(
         primary: [
           "bg-accent text-accent-foreground",
           "border-[1.75px] border-stroke-doodle/25",
-          "shadow-[1px_2px_0_rgba(42,38,34,0.12)]",
-          "hover:brightness-[1.04] hover:-translate-y-0.5 hover:shadow-[2px_4px_0_rgba(42,38,34,0.14)]",
+          "shadow-[1px_2px_0_var(--doodle-shadow)]",
+          "hover:brightness-[1.04] hover:-translate-y-0.5 hover:shadow-[2px_4px_0_var(--doodle-shadow)]",
         ].join(" "),
         secondary: [
           "bg-surface text-ink",
           "border-[1.75px] border-stroke-doodle/55",
-          "shadow-[1px_1px_0_rgba(42,38,34,0.08)]",
+          "shadow-[1px_1px_0_var(--doodle-shadow-soft)]",
           "hover:bg-sticky-ink hover:-translate-y-0.5",
         ].join(" "),
         ghost:
           "text-ink hover:bg-sticky-ink/80 border border-transparent hover:-translate-y-0.5",
         danger: [
-          "bg-danger text-white",
+          "bg-danger text-danger-foreground",
           "border-[1.75px] border-stroke-doodle/20",
-          "shadow-[1px_2px_0_rgba(42,38,34,0.12)]",
+          "shadow-[1px_2px_0_var(--doodle-shadow)]",
           "hover:brightness-105 hover:-translate-y-0.5",
         ].join(" "),
       },

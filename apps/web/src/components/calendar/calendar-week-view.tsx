@@ -41,7 +41,7 @@ export function CalendarWeekView({
       className={cn(
         "notebook-surface overflow-hidden rounded-[16px_20px_18px_14px]",
         "border-[1.75px] border-stroke-doodle/55",
-        "shadow-[1px_2px_0_rgba(42,38,34,0.06),var(--paper-shadow)]",
+        "shadow-[1px_2px_0_var(--doodle-shadow-lift),var(--paper-shadow)]",
       )}
     >
       <div className="grid grid-cols-1 gap-px bg-stroke-doodle/10 md:grid-cols-7">

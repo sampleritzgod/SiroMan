@@ -10,8 +10,8 @@ export function Card({
       className={cn(
         "dot-surface relative overflow-hidden",
         "rounded-[16px_20px_18px_14px]",
-        "border-[1.75px] border-stroke-doodle/55",
-        "shadow-[1px_2px_0_rgba(42,38,34,0.06),var(--paper-shadow)]",
+        "border border-stroke-doodle/40",
+        "shadow-[var(--paper-shadow)]",
         className,
       )}
       {...props}

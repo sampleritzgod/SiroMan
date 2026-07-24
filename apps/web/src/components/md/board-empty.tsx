@@ -40,10 +40,10 @@ export function BoardEmptyIllustration() {
       <div className="flex items-start gap-3">
         <SketchPinIcon />
         <div>
-          <p className="font-hand text-2xl leading-tight text-ink">
+          <p className="font-hand text-2xl leading-tight">
             Park a thought
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+          <p className="mt-2 text-sm leading-relaxed text-[color:var(--on-sticky)]/65">
             Add a due date when it matters. SiroMan will help you follow
             through.
           </p>
